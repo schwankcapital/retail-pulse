@@ -1,0 +1,124 @@
+{
+  "$defs": {
+    "VisualEvent": {
+      "additionalProperties": false,
+      "description": "The provider schema does not let an LLM choose its own evidence path or store.",
+      "properties": {
+        "sku": {
+          "title": "Sku",
+          "type": "string"
+        },
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        },
+        "start_seconds": {
+          "minimum": 0,
+          "title": "Start Seconds",
+          "type": "number"
+        },
+        "end_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "End Seconds",
+          "type": "number"
+        },
+        "kind": {
+          "enum": [
+            "shelf_state",
+            "removal",
+            "restock",
+            "misplacement",
+            "damage"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "unavailable",
+            "unknown"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "count_min": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Count Min"
+        },
+        "count_max": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Count Max"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "visibility": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Visibility",
+          "type": "number"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sku",
+        "zone_id",
+        "start_seconds",
+        "end_seconds",
+        "kind",
+        "availability",
+        "count_min",
+        "count_max",
+        "confidence",
+        "visibility",
+        "note"
+      ],
+      "title": "VisualEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "events": {
+      "items": {
+        "$ref": "#/$defs/VisualEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "events",
+    "limitations"
+  ],
+  "title": "VisualBatch",
+  "type": "object"
+}

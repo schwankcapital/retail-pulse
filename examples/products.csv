@@ -1,0 +1,3 @@
+store_id,sku,upc,title,zone_id,camera_id,shelf_capacity,case_pack,lead_days,roi
+STORE_01,SNACK_A,000000000001,Example packaged snack,SHELF_A,CAM_01,24,6,1,"[0.05,0.10,0.45,0.90]"
+STORE_01,ITEM_B,000000000002,Example accessory,SHELF_B,CAM_01,12,3,1,"[0.55,0.10,0.95,0.90]"

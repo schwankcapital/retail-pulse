@@ -1,0 +1,76 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "store_id": {
+      "pattern": "^[A-Za-z0-9_-]{1,64}$",
+      "title": "Store Id",
+      "type": "string"
+    },
+    "sku": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Sku",
+      "type": "string"
+    },
+    "upc": {
+      "pattern": "^[0-9]{8,14}$",
+      "title": "Upc",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "zone_id": {
+      "title": "Zone Id",
+      "type": "string"
+    },
+    "camera_id": {
+      "title": "Camera Id",
+      "type": "string"
+    },
+    "shelf_capacity": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Shelf Capacity",
+      "type": "integer"
+    },
+    "case_pack": {
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Case Pack",
+      "type": "integer"
+    },
+    "lead_days": {
+      "maximum": 90,
+      "minimum": 0,
+      "title": "Lead Days",
+      "type": "integer"
+    },
+    "roi": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Roi",
+      "type": "array"
+    }
+  },
+  "required": [
+    "store_id",
+    "sku",
+    "upc",
+    "title",
+    "zone_id",
+    "camera_id",
+    "shelf_capacity",
+    "case_pack",
+    "lead_days",
+    "roi"
+  ],
+  "title": "Product",
+  "type": "object"
+}

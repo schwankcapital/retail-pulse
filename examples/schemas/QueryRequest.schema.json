@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "question": {
+      "maxLength": 2000,
+      "minLength": 3,
+      "title": "Question",
+      "type": "string"
+    },
+    "store_id": {
+      "default": "DEMO_01",
+      "title": "Store Id",
+      "type": "string"
+    },
+    "mode": {
+      "default": "demo",
+      "enum": [
+        "demo",
+        "meta"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "role": {
+      "default": "business",
+      "enum": [
+        "business",
+        "health"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "question"
+  ],
+  "title": "QueryRequest",
+  "type": "object"
+}

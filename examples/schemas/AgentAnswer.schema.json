@@ -1,0 +1,46 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "answer": {
+      "title": "Answer",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "metric_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Metric Ids",
+      "type": "array"
+    },
+    "caveats": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Caveats",
+      "type": "array"
+    },
+    "suggested_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Suggested Actions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "answer",
+    "evidence_ids",
+    "metric_ids",
+    "caveats",
+    "suggested_actions"
+  ],
+  "title": "AgentAnswer",
+  "type": "object"
+}

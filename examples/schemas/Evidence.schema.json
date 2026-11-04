@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "evidence_id": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "path": {
+      "title": "Path",
+      "type": "string"
+    },
+    "media_type": {
+      "enum": [
+        "video",
+        "image",
+        "fixture"
+      ],
+      "title": "Media Type",
+      "type": "string"
+    },
+    "store_id": {
+      "title": "Store Id",
+      "type": "string"
+    },
+    "camera_id": {
+      "title": "Camera Id",
+      "type": "string"
+    },
+    "start_at": {
+      "format": "date-time",
+      "title": "Start At",
+      "type": "string"
+    },
+    "duration_seconds": {
+      "minimum": 0,
+      "title": "Duration Seconds",
+      "type": "number"
+    },
+    "seconds_to_world": {
+      "default": 1,
+      "exclusiveMinimum": 0,
+      "title": "Seconds To World",
+      "type": "number"
+    },
+    "sha256": {
+      "title": "Sha256",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": false,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "path",
+    "media_type",
+    "store_id",
+    "camera_id",
+    "start_at",
+    "duration_seconds",
+    "sha256"
+  ],
+  "title": "Evidence",
+  "type": "object"
+}

@@ -1,0 +1,81 @@
+'use strict';
+function historyPlot(rows,label='Recorded quantity'){
+  if(!rows?.length)return '<p>No source records match this selection.</p>';
+  const w=900,h=230,values=rows.map(r=>Number(r.quantity)),max=Math.max(1,...values),min=Math.min(0,...values),start=Date.parse(rows[0].date),span=Math.max(1,Date.parse(rows.at(-1).date)-start);
+  const path=rows.map((r,i)=>`${i?'L':'M'}${55+(Date.parse(r.date)-start)/span*825},${15+(max-r.quantity)/(max-min)*175}`).join(' ');
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}"><path class="chart-line series-available" d="${path}"/><text x="0" y="20">${number(max,1)}</text><text x="0" y="190">${number(min,1)}</text><text x="55" y="220">${esc(rows[0].date)}</text><text x="780" y="220">${esc(rows.at(-1).date)}</text></svg><p class="section-note">${esc(label)} · ${number(rows.length,0)} source dates · no invented missing-day sales.</p>`;
+}
+function researchLoading(){return '<section class="panel"><p><span class="spinner"></span> Loading recorded research results…</p></section>';}
+async function loadResearch(key,path){
+  if(S[key+'Pending'])return;S[key+'Pending']=true;
+  try{S[key]=await json(path);if(['flow','library','lab'].includes(S.page))render();}
+  catch(e){setError(e);}finally{S[key+'Pending']=false;}
+}
+function flow(){
+  if(!S.flowData){loadResearch('flowData','/api/video-flow');return researchLoading();}
+  const all=S.flowData.scenarios||[];if(!all.length)return callout('No counted video scenarios have been prepared.');
+  const s=all.find(x=>x.scenario_id===S.flowId)||all[0];S.flowId=s.scenario_id;
+  return `${hero('REAL VIDEO → DEMO INVENTORY → DEMAND PLANNING','Follow a product. <em>See what changes.</em>','Play actual paired camera footage. The saved Muse reading drives the scenario shelf count at each event timestamp.',routeLink('lab','Inspect model experiments','button outline'))}
+  ${callout(s.join_notice)}
+  ${s.evidence_review?.requires_human_review?callout(`Independent Muse review disagrees: first pass ${s.evidence_review.primary_exact_transfer_count}, second pass ${s.evidence_review.second_pass_exact_transfer_count}. Inventory changes are held until human review in the Operations desk.`,'warn')+routeLink('operations','Resolve the evidence conflict','button'):''}
+  <div class="toolbar"><label>Research clip<select id="flow-clip">${all.map(x=>`<option value="${esc(x.scenario_id)}" ${s.scenario_id===x.scenario_id?'selected':''}>${esc(x.scenario_id)} · ${x.ledger.events.filter(e=>e.applied).length} accepted transfers</option>`).join('')}</select></label><span class="chip">${number(S.flowData.observed_clips,0)} CLIPS READ · ${number(S.flowData.accepted_transfers,0)} ACCEPTED EVENTS · MUSE SPARK</span></div>
+  <div class="research-grid"><section class="panel"><div class="panel-header"><div><h2>Actual surveillance footage</h2><p>Two synchronized views of the same interaction. Source faces are blurred.</p></div>${badge('REAL VIDEO','pass')}</div><video id="flow-player" controls playsinline preload="metadata" aria-label="Real RetailAction product transfer"></video><p class="section-note"><a href="${esc(s.clip.source_url)}" target="_blank" rel="noopener">RetailAction source</a> · ${number(s.clip.duration_seconds,2)} seconds · ${esc(s.clip.model)} · saved inference, no charge for replay.</p><div id="flow-events">${s.ledger.events.map(e=>`<article class="timeline-event"><strong>${esc(nice(e.action))} · ${e.quantity_min==null?'Uncountable':e.quantity_min===e.quantity_max?e.quantity_min:`${e.quantity_min}–${e.quantity_max??'unknown'}`} units</strong><span class="chip">${number(e.confidence*100,0)}% MODEL CONFIDENCE</span><p>${esc(e.evidence_reason)}</p><p>${e.applied?'Accepted for scenario shelf movement':esc(e.review_reason)}</p><button class="text-button" data-flow-seek="${e.start_seconds}">Play ${number(e.start_seconds,1)}–${number(e.end_seconds,1)}s</button></article>`).join('')||'<p>No transfer established in this clip.</p>'}</div><details><summary>Perception limitations</summary><ul>${s.clip.limitations.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details></section>
+  <section class="panel"><div class="panel-header"><div><h2>Scenario inventory</h2><p>Illustrative mapped item: ${esc(s.sku)} / M5 ${esc(s.store)}</p></div>${badge('DEMO JOIN','warn')}</div><div id="flow-balances"></div><label class="check-row"><input id="flow-checkout" type="checkbox"><span>After the clip, simulate a matched checkout for the remaining held items</span></label><p class="section-note">Without a checkout match, the item stays in the store balance and is flagged for review. Footage alone does not establish payment, theft or intent.</p><div id="flow-planning"></div><details><summary>Inspect opening stock and mapping</summary><p>Opening shelf quantity: ${number(s.ledger.initial_shelf,0)}. Copied from real record ${esc(s.stock_anchor.store_id)} / ${esc(s.stock_anchor.sku)} (${esc(s.stock_anchor.title)}), interval ${esc(s.stock_anchor.start)} to ${esc(s.stock_anchor.finish)}. Allocating it to this filmed shelf is simulated. Backroom allocation is zero in this scenario.</p><p>${esc(s.initial_hand_notice||'No opening in-hand quantity assumed.')}</p></details></section></div>
+  ${panel('Real sales behind this product scenario',`${s.sku} · 1,941 original daily values, 2011–2016 · ${number(sum(s.history,'quantity'),0)} recorded units`,historyPlot(s.history,'Original M5 daily unit sales'))}
+  ${callout(S.flowData.notice)}`;
+}
+function paintFlow(){
+  const s=S.flowData.scenarios.find(x=>x.scenario_id===S.flowId),player=$('#flow-player');if(!s||!player)return;
+  const t=player.currentTime,applied=s.ledger.events.filter(e=>e.applied&&t>=e.end_seconds),last=applied.at(-1);
+  const shelf=last?last.shelf_after:s.ledger.initial_shelf,hand=last?last.in_hand_after:s.ledger.initial_in_hand,whole=s.ledger.initial_store_units;
+  const completed=t>=s.clip.duration_seconds-.12,checked=$('#flow-checkout').checked&&completed;
+  $('#flow-balances').innerHTML=`<p class="eyebrow">PLAYHEAD ${number(t,1)}s · ${applied.length} ACCEPTED TRANSFERS APPLIED</p><div class="flow-numbers"><div><strong>${number(shelf,0)}</strong><span>On shelf</span></div><div><strong>${number(checked?0:hand,0)}</strong><span>Held by customer</span></div><div><strong>${number(checked?whole-hand:whole,0)}</strong><span>Whole-store units</span></div></div><p>${checked?'Simulated checkout matched: '+number(hand,0)+' units deducted from scenario store stock.':hand?'Observed removal changes shelf availability. Store stock waits for checkout reconciliation.':'Play the clip to follow the timestamped movement.'}</p>`;
+  const refill=Math.max(0,s.planning.target_shelf-shelf),risk=shelf===0?s.planning.conditional_units_at_risk:0;
+  $('#flow-planning').innerHTML=`<h3>Replenishment and demand</h3><dl class="research-facts"><dt>7-day sales forecast</dt><dd>${number(s.forecast_7d,2)} units</dd><dt>Scenario shelf target</dt><dd>${s.planning.target_shelf} units</dd><dt>Refill suggestion at this moment</dt><dd>${refill} units</dd><dt>Opening refill suggestion</dt><dd>${s.planning.refill_before} units</dd><dt>If empty for 3 hours</dt><dd>${number(risk,2)} sales units at risk</dd></dl><p class="section-note">${esc(s.planning.explanation)}</p>${shelf===0?callout('Shelf empty in this scenario. Refill review is triggered; the demand forecast itself stays unchanged.','warn'):''}`;
+}
+function library(){
+  if(!S.libraryMeta){loadResearch('libraryMeta','/api/library');return researchLoading();}
+  const sources=S.libraryMeta.warehouse?.sources||[];if(!sources.length)return callout('Prepare the local data warehouse to browse the archive.');
+  const dataset=S.libraryDataset||'m5',meta=sources.find(x=>x.dataset===dataset),b=S.libraryBrowse;
+  return `${hero('ALL DOWNLOADED SOURCES','Real records. <em>More history.</em>','Explore each source independently. Product and store identifiers from different publishers do not imply a factual identity match.')}
+  <div class="kpis">${kpi('Daily values / records',sum(sources,'rows'),'','M5 wide values counted as item-store-days','database','mint',0)}${kpi('Selected source products',meta.products,'','Distinct original identifiers','box','blue',0)}${kpi('Selected source stores',meta.stores,'','Original publisher stores','store','amber',0)}${kpi('Selected source rows',meta.rows,'',meta.unit,'chart','mint',0)}</div>
+  <section class="panel"><form id="library-form" class="toolbar"><label>Dataset<select id="library-dataset">${sources.map(x=>`<option value="${x.dataset}" ${x.dataset===dataset?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><label>Store<select id="library-store"><option value="">All source stores</option>${(b?.stores||[]).map(x=>`<option ${S.libraryStore===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label><label>Product identifier<input id="library-query" value="${esc(S.libraryQuery||'')}" placeholder="Search source SKU"></label><button class="button" type="submit">Apply filters</button></form><p class="section-note">${esc(meta.start)} to ${esc(meta.end)} · ${esc(meta.unit)}${dataset==='retail_stock'?' · Product quantities show latest reported intervals. Chart sums interval-start quantities, not daily on-hand stock.':''}${dataset==='favorita'?' · Signed unit_sales include returns and fractional quantities.':''}${dataset.startsWith('fresh')?' · Normalized values are not physical item counts.':''}</p></section>
+  <div id="library-results">${b?panel(S.librarySku?`Recorded history: ${S.librarySku}`:'All matching store history',S.librarySku?'Original source product series.':'Search limits the product table; select a product below for its history.',historyPlot(b.daily,meta.unit))+panel('Source products',`${number(b.total,0)} item-store pairs · showing ${number((S.libraryOffset||0)+1,0)}–${number(Math.min((S.libraryOffset||0)+50,b.total),0)}`,table(['Store','Product','Description / category',dataset==='retail_stock'?'Latest recorded on hand':'History quantity'],b.items.map(r=>`<tr><td>${esc(r.store_id)}</td><td><button class="text-button" data-library-sku="${esc(r.sku)}" data-library-store="${esc(r.store_id)}">${esc(r.sku)}</button></td><td>${esc(r.title||r.cat_id||'Publisher-encoded product')}</td><td class="num">${number(r.quantity,3)}</td></tr>`)),`<button class="button outline small" id="library-prev" ${(S.libraryOffset||0)===0?'disabled':''}>Previous</button><button class="button outline small" id="library-next" ${(S.libraryOffset||0)+50>=b.total?'disabled':''}>Next</button>`):researchLoading()}</div>
+  ${panel('Visual source collection','Actual downloaded imagery and footage; image examples are independent of the product-journey inventory scenario.',`<div class="source-gallery">${(S.libraryMeta.assets||[]).map(a=>`<article><h3>${esc(nice(a.source))}</h3><p>${number(a.images,0)} images · ${number(a.videos,0)} video files</p>${a.evidence_id?`<img data-research-image="${esc(a.evidence_id)}" alt="Actual ${esc(a.source)} source image"><p>${esc(a.reading.description)}</p><span class="chip">MUSE VISIBLE COUNT: ${a.reading.visible_units_min==null?'UNKNOWN':a.reading.visible_units_min+'–'+(a.reading.visible_units_max??'UNKNOWN')}</span><details><summary>Model uncertainty</summary><p>${esc(a.reading.limitations.join(' '))}</p></details>`:'<p>Paired views and alternate encodings can refer to the same interaction.</p>'}<a href="${esc(a.url)}" target="_blank" rel="noopener">Publisher source</a></article>`).join('')}</div>`)}
+  ${callout(S.libraryMeta.warehouse.note)}`;
+}
+async function browseLibrary(){
+  const seq=(S.librarySequence||0)+1;S.librarySequence=seq;
+  const q=new URLSearchParams({dataset:S.libraryDataset||'m5',query:S.libraryQuery||'',offset:String(S.libraryOffset||0)});if(S.libraryStore)q.set('store',S.libraryStore);if(S.librarySku)q.set('sku',S.librarySku);
+  try{const result=await json('/api/library/browse?'+q);if(seq!==S.librarySequence)return;S.libraryBrowse=result;if(S.page==='library')render();}catch(e){setError(e);}
+}
+function lab(){
+  if(!S.benchmarkData){loadResearch('benchmarkData','/api/forecast-benchmark');return researchLoading();}
+  if(!S.labData){loadResearch('labData','/api/model-lab');return researchLoading();}
+  const m=S.labData;if(!m.selected)return callout('No real-data experiment has been completed.');
+  return `${benchmarkPanel()}${hero('MUSE PLANS · PYTHON TRAINS · REAL HISTORY TESTS','A measurable tuning experiment.','Muse selected a bounded regression search. Local training compared it with simple baselines and froze the choice before evaluating the final test period.')}
+  <div class="kpis">${kpi('Real product series',m.series,'','M5 CA_1 food category','box','mint',0)}${kpi('Source history values',m.history_rows,'','1,941 days per series','database','blue',0)}${kpi('Training rows',m.splits.train.rows,'','365 days, chronological','chart','mint',0)}${kpi('Test WAPE',m.candidates[m.selected].test.wape*100,'%','Rolling one-day predictions','target','amber',2)}</div>
+  ${panel('Candidate comparison',`Selected by validation WAPE: ${m.selected}. Lower error is better.`,table(['Candidate','Regularization α','Validation WAPE','Test WAPE','Test MAE (units)'],Object.entries(m.candidates).map(([name,r])=>`<tr><td>${esc(name)} ${name===m.selected?badge('SELECTED','pass'):''}</td><td>${r.parameters.alpha??'Baseline'}</td><td>${number(r.validation.wape*100,2)}%</td><td>${number(r.test.wape*100,2)}%</td><td>${number(r.test.mae,3)}</td></tr>`)))}
+  ${panel('Muse experiment plan',`${m.plan.model} · actual saved API response`, `<p>${esc(m.plan.rationale)}</p><ul>${m.plan.checks.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`)}
+  ${panel('Chronological evaluation','No simulated video or missed-sales estimates are used as training labels.',table(['Partition','Start','End','Rows'],Object.entries(m.splits).map(([k,r])=>`<tr><td>${esc(nice(k))}</td><td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${number(r.rows,0)}</td></tr>`)))}
+  ${panel('What these results establish','Evaluated demo candidate; no production promotion.',`<ul>${m.limitations.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`)}${routeLink('flow','See the video-to-inventory scenario','button')}`;
+}
+async function researchMedia(id,node){
+  try{const response=await api('/api/media/'+encodeURIComponent(id));const url=URL.createObjectURL(await response.blob());if(node.isConnected){(S.researchBlobs??=[]).push(url);node.src=url;}else URL.revokeObjectURL(url);}catch(e){setError(e);}
+}
+function disposeResearchMedia(){for(const player of $$('#flow-player, #ops-player'))player.pause();clearInterval(S.opsPoll);S.opsReplay?.abort();for(const url of S.researchBlobs||[])URL.revokeObjectURL(url);S.researchBlobs=[];}
+function bindResearch(){
+  if(S.page==='flow'&&$('#flow-player')){
+    const p=$('#flow-player');researchMedia(S.flowId,p);p.addEventListener('timeupdate',paintFlow);p.addEventListener('ended',paintFlow);$('#flow-checkout').addEventListener('change',paintFlow);paintFlow();
+    $('#flow-clip').addEventListener('change',e=>{S.flowId=e.target.value;render();});
+    $$('[data-flow-seek]').forEach(b=>b.addEventListener('click',()=>{p.currentTime=Number(b.dataset.flowSeek);p.play().catch(()=>{});}));
+  }
+  if(S.page==='library'&&$('#library-form')){
+    if(!S.libraryBrowse&&!S.librarySequence)browseLibrary();
+    $('#library-form').addEventListener('submit',e=>{e.preventDefault();S.libraryStore=$('#library-store').value;S.libraryQuery=$('#library-query').value;S.librarySku=null;S.libraryOffset=0;browseLibrary();});
+    $('#library-dataset').addEventListener('change',e=>{S.libraryDataset=e.target.value;S.libraryStore='';S.libraryQuery='';S.librarySku=null;S.libraryOffset=0;S.libraryBrowse=null;browseLibrary();});
+    $('#library-prev')?.addEventListener('click',()=>{S.libraryOffset=Math.max(0,(S.libraryOffset||0)-50);browseLibrary();});$('#library-next')?.addEventListener('click',()=>{S.libraryOffset=(S.libraryOffset||0)+50;browseLibrary();});
+    $$('[data-library-sku]').forEach(b=>b.addEventListener('click',()=>{S.librarySku=b.dataset.librarySku;S.libraryStore=b.dataset.libraryStore;S.libraryQuery=b.dataset.librarySku;S.libraryOffset=0;browseLibrary();}));
+    $$('[data-research-image]').forEach(img=>researchMedia(img.dataset.researchImage,img));
+  }
+}

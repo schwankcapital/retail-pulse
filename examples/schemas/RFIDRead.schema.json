@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "read_id": {
+      "title": "Read Id",
+      "type": "string"
+    },
+    "scan_id": {
+      "title": "Scan Id",
+      "type": "string"
+    },
+    "epc": {
+      "title": "Epc",
+      "type": "string"
+    },
+    "store_id": {
+      "title": "Store Id",
+      "type": "string"
+    },
+    "sku": {
+      "title": "Sku",
+      "type": "string"
+    },
+    "zone_id": {
+      "default": "store",
+      "title": "Zone Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "at",
+    "read_id",
+    "scan_id",
+    "epc",
+    "store_id",
+    "sku"
+  ],
+  "title": "RFIDRead",
+  "type": "object"
+}

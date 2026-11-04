@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "scan_id": {
+      "title": "Scan Id",
+      "type": "string"
+    },
+    "store_id": {
+      "title": "Store Id",
+      "type": "string"
+    },
+    "sku": {
+      "title": "Sku",
+      "type": "string"
+    },
+    "upc": {
+      "title": "Upc",
+      "type": "string"
+    },
+    "zone_id": {
+      "title": "Zone Id",
+      "type": "string"
+    },
+    "action": {
+      "default": "observed",
+      "title": "Action",
+      "type": "string"
+    }
+  },
+  "required": [
+    "at",
+    "scan_id",
+    "store_id",
+    "sku",
+    "upc",
+    "zone_id"
+  ],
+  "title": "BarcodeScan",
+  "type": "object"
+}

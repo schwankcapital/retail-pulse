@@ -1,0 +1,58 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "store_id": {
+      "title": "Store Id",
+      "type": "string"
+    },
+    "sku": {
+      "title": "Sku",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "opening",
+        "receipt",
+        "sale",
+        "return",
+        "disposal",
+        "adjustment"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "quantity": {
+      "title": "Quantity",
+      "type": "integer"
+    },
+    "source": {
+      "default": "csv",
+      "title": "Source",
+      "type": "string"
+    },
+    "business_ref": {
+      "default": "",
+      "title": "Business Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "at",
+    "event_id",
+    "store_id",
+    "sku",
+    "kind",
+    "quantity"
+  ],
+  "title": "Transaction",
+  "type": "object"
+}

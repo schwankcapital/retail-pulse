@@ -1,0 +1,137 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "observation_id": {
+      "title": "Observation Id",
+      "type": "string"
+    },
+    "store_id": {
+      "title": "Store Id",
+      "type": "string"
+    },
+    "sku": {
+      "title": "Sku",
+      "type": "string"
+    },
+    "zone_id": {
+      "title": "Zone Id",
+      "type": "string"
+    },
+    "end_at": {
+      "format": "date-time",
+      "title": "End At",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "shelf_state",
+        "removal",
+        "restock",
+        "misplacement",
+        "damage",
+        "count"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "availability": {
+      "default": "unknown",
+      "enum": [
+        "available",
+        "unavailable",
+        "unknown"
+      ],
+      "title": "Availability",
+      "type": "string"
+    },
+    "count_min": {
+      "anyOf": [
+        {
+          "maximum": 100000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Count Min"
+    },
+    "count_max": {
+      "anyOf": [
+        {
+          "maximum": 100000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Count Max"
+    },
+    "count_scope": {
+      "default": "visible",
+      "enum": [
+        "visible",
+        "shelf",
+        "whole_store_verified"
+      ],
+      "title": "Count Scope",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "visibility": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Visibility",
+      "type": "number"
+    },
+    "evidence_id": {
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "origin": {
+      "enum": [
+        "demo_replay",
+        "muse",
+        "manual"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "note": {
+      "default": "",
+      "maxLength": 1000,
+      "title": "Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "at",
+    "observation_id",
+    "store_id",
+    "sku",
+    "zone_id",
+    "end_at",
+    "kind",
+    "confidence",
+    "visibility",
+    "evidence_id",
+    "origin"
+  ],
+  "title": "Observation",
+  "type": "object"
+}

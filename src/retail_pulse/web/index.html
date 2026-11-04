@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1018">
+  <meta name="description" content="Retail Pulse - In-Store Retail Super Intelligence. Evidence-linked inventory, demand and operational insight.">
+  <title>Retail Pulse | In-Store Retail Super Intelligence</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/style.css?v=operations2">
+  <link rel="stylesheet" href="/static/operations.css?v=operations2">
+  <script src="/static/research.js?v=operations2" defer></script>
+  <script src="/static/operations.js?v=operations2" defer></script>
+  <script src="/static/app.js?v=operations2" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to workspace</a>
+  <div class="ambient" aria-hidden="true"></div>
+  <div id="request-progress" class="request-progress" aria-hidden="true"></div>
+  <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+    <a class="brand" href="#operations" aria-label="Retail Pulse home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M9 23h6l4-12 5 19 4-12h4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="18" r="2.2" fill="currentColor"/></svg></span>
+      <span class="brand-name">Retail <strong>Pulse</strong></span>
+      <small>In-Store Retail Super Intelligence</small>
+    </a>
+    <button id="command-open" class="command-trigger"><span data-icon="search"></span><span>Quick navigation</span><kbd>Ctrl K</kbd></button>
+    <div class="nav-caption">INTELLIGENCE WORKSPACE</div>
+    <nav id="navigation">
+      <a class="nav" href="#operations" data-page="operations"><span data-icon="pulse"></span><span>Operations desk</span><span class="nav-tag">NEW</span></a>
+      <a class="nav" href="#flow" data-page="flow"><span data-icon="play"></span><span>Product journey</span></a>
+      <a class="nav active" href="#overview" data-page="overview" aria-current="page"><span data-icon="overview"></span><span>Operations overview</span><i class="nav-pip"></i></a>
+      <a class="nav" href="#timeline" data-page="timeline"><span data-icon="video"></span><span>Visual evidence</span></a>
+      <a class="nav" href="#inventory" data-page="inventory"><span data-icon="box"></span><span>Inventory truth</span></a>
+      <a class="nav" href="#forecast" data-page="forecast"><span data-icon="chart"></span><span>Demand intelligence</span></a>
+      <div class="nav-caption secondary">INTELLIGENCE AGENTS</div>
+      <a class="nav" href="#health" data-page="health"><span data-icon="pulse"></span><span>ML health steward</span><span class="nav-tag">AGENT</span></a>
+      <a class="nav" href="#agents" data-page="agents"><span data-icon="spark"></span><span>Business insights</span><span class="nav-tag">AGENT</span></a>
+      <div class="nav-caption secondary">WORKSPACE CONTROLS</div>
+      <a class="nav" href="#library" data-page="library"><span data-icon="database"></span><span>Data library</span></a>
+      <a class="nav" href="#lab" data-page="lab"><span data-icon="target"></span><span>Model experiments</span></a>
+      <a class="nav" href="#inputs" data-page="inputs"><span data-icon="layers"></span><span>Sources &amp; ingestion</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="guard-card"><span data-icon="shield"></span><div><strong>Evidence. Not assumptions.</strong><p>Human-reviewed recommendations.<br>No automatic inventory writes.</p></div></div>
+      <div class="sidebar-links"><button id="access-open"><span data-icon="key"></span>API access</button><a href="/docs" target="_blank" rel="noopener">API docs <span data-icon="external"></span></a></div>
+      <div class="workspace-identity"><span class="avatar">RP</span><div><strong>Research workspace</strong><small id="sidebar-mode">Connecting to local API</small></div><span class="connection-light" id="connection-light" title="Connection status"></span></div>
+    </div>
+  </aside>
+  <button class="mobile-scrim" id="mobile-scrim" aria-label="Close navigation" hidden></button>
+  <div class="workspace" id="workspace">
+    <header class="topbar">
+      <div class="topbar-left"><button class="icon-button mobile-menu" id="menu-toggle" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu"></span></button><span class="breadcrumb-home">Workspace</span><span class="breadcrumb-divider">/</span><h1 id="page-title" tabindex="-1">Operations overview</h1></div>
+      <div class="header-actions">
+        <span id="mode-badge" class="badge neutral">CONNECTING</span>
+        <label class="store-control"><span data-icon="store"></span><select id="store-select" aria-label="Select store"><option value="">Loading stores</option></select></label>
+        <button class="icon-button" id="theme-toggle" aria-label="Switch to light theme" title="Switch theme"><span data-icon="sun"></span></button>
+        <button class="icon-button" id="refresh" aria-label="Refresh workspace" title="Refresh workspace"><span data-icon="refresh"></span></button>
+      </div>
+    </header>
+    <div class="content-shell">
+      <div id="global-error" class="alert error hidden" role="alert"></div>
+      <div id="dataset-notice" class="notice hidden"></div>
+      <main id="content" tabindex="-1" aria-busy="true"><section class="skeleton-layout" aria-label="Loading workspace"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-description"></div><div class="kpis"><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div><div class="skeleton skeleton-panel"></div></section></main>
+      <footer><span><span class="footer-dot"></span>Retail Pulse <span class="footer-separator">/</span> Interface 2.0</span><span id="as-of">Awaiting report</span><span>Observed &middot; Estimated &middot; Reviewable</span></footer>
+    </div>
+  </div>
+  <dialog class="command-dialog" id="command-dialog" aria-labelledby="command-title">
+    <form method="dialog" class="dialog-header"><h2 id="command-title">Jump to anything</h2><button class="icon-button" aria-label="Close command menu"><span data-icon="close"></span></button></form>
+    <label class="command-input"><span data-icon="search"></span><input id="command-search" type="search" autocomplete="off" placeholder="Search pages, products, or actions" aria-label="Search workspace"></label>
+    <div id="command-results" class="command-results"></div>
+    <div class="command-footer"><span><kbd>&uarr;</kbd><kbd>&darr;</kbd> Navigate <kbd>Enter</kbd> Open</span><span><kbd>Esc</kbd> Close</span></div>
+  </dialog>
+  <dialog class="drawer" id="inspector" aria-labelledby="inspector-title">
+    <form method="dialog" class="dialog-header"><span class="eyebrow">PRODUCT INTELLIGENCE</span><button class="icon-button" aria-label="Close product details"><span data-icon="close"></span></button></form>
+    <div id="inspector-content"></div>
+  </dialog>
+  <dialog class="access-dialog" id="access-dialog" aria-labelledby="access-title">
+    <form method="dialog" class="dialog-header"><h2 id="access-title">Local API access</h2><button class="icon-button" aria-label="Close API access"><span data-icon="close"></span></button></form>
+    <p class="muted">Optional bearer token for your Retail Pulse server. This is not your Meta API key.</p>
+    <form id="access-form"><label>Local bearer token<input id="api-token" type="password" autocomplete="off" placeholder="Leave blank for a local unprotected server"></label><p class="section-note">Stored only in this browser tab's session. Your Meta API key stays in the server's .env file.</p><button class="button" type="submit">Save &amp; reconnect <span data-icon="arrow"></span></button></form>
+  </dialog>
+  <div id="toast-region" class="toasts" aria-live="polite" aria-relevant="additions"></div>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+  <noscript><div class="noscript">Retail Pulse requires JavaScript. Enable JavaScript, then reload this page.</div></noscript>
+</body>
+</html>
